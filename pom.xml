@@ -66,5 +66,11 @@
             <version>1.10.3</version>
             <classifier>mule-plugin</classifier>
         </dependency>
+        <dependency>
+            <groupId>com.mulesoft.connector</groupId>
+            <artifactId>mule-mcp-connector</artifactId>
+            <version>0.1.0-BETA</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
     </dependencies>
 </project>

@@ -1,33 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:http="http://www.mulesoft.org/schema/mule/http" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:batch="http://www.mulesoft.org/schema/mule/batch" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:mcp="http://www.mulesoft.org/schema/mule/mcp" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/batch http://www.mulesoft.org/schema/mule/batch/current/mule-batch.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mcp http://www.mulesoft.org/schema/mule/mcp/current/mule-mcp.xsd">
   <http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" basePath="/">
     <http:listener-connection host="0.0.0.0" port="8081" />
   </http:listener-config>
   <http:request-config name="YouTube_Request_config" doc:name="HTTP Request config" basePath="/youtube/v3">
     <http:request-connection host="www.googleapis.com" protocol="HTTPS" />
   </http:request-config>
+
+  <mcp:server-config name="MCP_Server" serverName="YouTube Search MCP Server" serverVersion="1.0.0">
+    <mcp:sse-server-connection listenerConfig="HTTP_Listener_config" sseEndpointPath="/sse" messagesPath="/message" />
+  </mcp:server-config>
+
   <flow name="youtube-search-api-flow" doc:id="c3a4e395-c0f9-4e2e-9a06-9d51eb0e444f">
-    <http:listener doc:name="Listener" config-ref="HTTP_Listener_config" path="/search">
-      <http:response statusCode="#[vars.httpStatus default 200]">
-        <http:headers>
-          <![CDATA[#[output application/java
----
-{
-	"Content-Type" : "application/json"
-}]]]>
-        </http:headers>
-      </http:response>
-      <http:error-response statusCode="#[vars.httpStatus default 500]">
-        <http:headers>
-          <![CDATA[#[output application/java
----
-{
-	"Content-Type" : "application/json"
-}]]]>
-        </http:headers>
-      </http:error-response>
-    </http:listener>
-    <logger level="INFO" doc:name="Log Request" message="Received YouTube search request with query parameters: #[attributes.queryParams]" />
+    <mcp:tool-listener config-ref="MCP_Server" name="youtube-search" doc:name="YouTube Search Tool">
+        <mcp:description>Search YouTube videos, channels, and playlists</mcp:description>
+        <mcp:parameters-schema><![CDATA[{
+            "$schema": "#",
+            "type": "object",
+            "properties": {
+                "part": {
+                    "type": "string",
+                    "description": "The part parameter specifies a comma-separated list of one or more search resource properties",
+                    "default": "snippet"
+                },
+                "key": {
+                    "type": "string",
+                    "description": "YouTube API key"
+                },
+                "q": {
+                    "type": "string",
+                    "description": "Search query term"
+                },
+                "channelId": {
+                    "type": "string",
+                    "description": "Channel ID to restrict search to"
+                },
+                "channelType": {
+                    "type": "string",
+                    "description": "Type of channel"
+                },
+                "eventType": {
+                    "type": "string",
+                    "description": "Type of event"
+                },
+                "maxResults": {
+                    "type": "string",
+                    "description": "Maximum number of items to return",
+                    "default": "10"
+                },
+                "order": {
+                    "type": "string",
+                    "description": "Order of results",
+                    "default": "date"
+                },
+                "pageToken": {
+                    "type": "string",
+                    "description": "Token for getting next/previous page"
+                },
+                "publishedAfter": {
+                    "type": "string",
+                    "description": "Only show items published after this date"
+                },
+                "publishedBefore": {
+                    "type": "string",
+                    "description": "Only show items published before this date"
+                },
+                "regionCode": {
+                    "type": "string",
+                    "description": "Region code for search results"
+                },
+                "relevanceLanguage": {
+                    "type": "string",
+                    "description": "Language for search results",
+                    "default": "en"
+                },
+                "safeSearch": {
+                    "type": "string",
+                    "description": "Safe search setting",
+                    "default": "moderate"
+                },
+                "topicId": {
+                    "type": "string",
+                    "description": "Topic ID to restrict search to"
+                },
+                "type": {
+                    "type": "string",
+                    "description": "Type of resource to search for",
+                    "default": "video"
+                },
+                "videoCaption": {
+                    "type": "string",
+                    "description": "Filter by video caption"
+                },
+                "videoCategoryId": {
+                    "type": "string",
+                    "description": "Filter by video category"
+                },
+                "videoDefinition": {
+                    "type": "string",
+                    "description": "Filter by video definition"
+                },
+                "videoDimension": {
+                    "type": "string",
+                    "description": "Filter by video dimension"
+                },
+                "videoDuration": {
+                    "type": "string",
+                    "description": "Filter by video duration"
+                },
+                "videoEmbeddable": {
+                    "type": "string",
+                    "description": "Filter by embeddable videos"
+                },
+                "videoLicense": {
+                    "type": "string",
+                    "description": "Filter by video license"
+                },
+                "videoSyndicated": {
+                    "type": "string",
+                    "description": "Filter by syndicated videos"
+                },
+                "videoType": {
+                    "type": "string",
+                    "description": "Filter by video type"
+                }
+            },
+            "required": ["key"]
+        }]]></mcp:parameters-schema>
+        <mcp:responses>
+            <mcp:text-tool-response-content text='#[payload.^raw]' />
+        </mcp:responses>
+    </mcp:tool-listener>
+    <logger level="INFO" doc:name="Log Request" message="Received YouTube search request with parameters: #[payload]" />
     <ee:transform doc:name="Prepare YouTube API Parameters">
       <ee:message />
       <ee:variables>
@@ -37,33 +141,33 @@ output application/java
 ---
 {
     // Required parameters
-    "part": attributes.queryParams.part default "snippet",
-    "key": attributes.queryParams.key default "",
+    "part": payload.part default "snippet",
+    "key": payload.key default "",
     // Optional filtering parameters
-    "q": attributes.queryParams.q,
-    "channelId": attributes.queryParams.channelId,
-    "channelType": attributes.queryParams.channelType,
-    "eventType": attributes.queryParams.eventType,
-    "maxResults": attributes.queryParams.maxResults default "10",
-    "order": attributes.queryParams.order default "date",
-    "pageToken": attributes.queryParams.pageToken,
-    "publishedAfter": attributes.queryParams.publishedAfter,
-    "publishedBefore": attributes.queryParams.publishedBefore,
-    "regionCode": attributes.queryParams.regionCode,
-    "relevanceLanguage": attributes.queryParams.relevanceLanguage default "en",
-    "safeSearch": attributes.queryParams.safeSearch default "moderate",
-    "topicId": attributes.queryParams.topicId,
+    "q": payload.q,
+    "channelId": payload.channelId,
+    "channelType": payload.channelType,
+    "eventType": payload.eventType,
+    "maxResults": payload.maxResults default "10",
+    "order": payload.order default "date",
+    "pageToken": payload.pageToken,
+    "publishedAfter": payload.publishedAfter,
+    "publishedBefore": payload.publishedBefore,
+    "regionCode": payload.regionCode,
+    "relevanceLanguage": payload.relevanceLanguage default "en",
+    "safeSearch": payload.safeSearch default "moderate",
+    "topicId": payload.topicId,
     // Type is a reserved word in DataWeave
-    "type": attributes.queryParams.'type' default "video",
-    "videoCaption": attributes.queryParams.videoCaption,
-    "videoCategoryId": attributes.queryParams.videoCategoryId,
-    "videoDefinition": attributes.queryParams.videoDefinition,
-    "videoDimension": attributes.queryParams.videoDimension,
-    "videoDuration": attributes.queryParams.videoDuration,
-    "videoEmbeddable": attributes.queryParams.videoEmbeddable,
-    "videoLicense": attributes.queryParams.videoLicense,
-    "videoSyndicated": attributes.queryParams.videoSyndicated,
-    "videoType": attributes.queryParams.videoType
+    "type": payload.'type' default "video",
+    "videoCaption": payload.videoCaption,
+    "videoCategoryId": payload.videoCategoryId,
+    "videoDefinition": payload.videoDefinition,
+    "videoDimension": payload.videoDimension,
+    "videoDuration": payload.videoDuration,
+    "videoEmbeddable": payload.videoEmbeddable,
+    "videoLicense": payload.videoLicense,
+    "videoSyndicated": payload.videoSyndicated,
+    "videoType": payload.videoType
 } filterObject ((value, key) -> value != null)
 ]]>
         </ee:set-variable>
