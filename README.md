@@ -8,10 +8,16 @@ This server is connecting to the [YouTube Data API (v3)](https://developers.goog
 ## Getting Your YouTube API Key
 
 1. Go to the [Google Cloud Console](https://console.cloud.google.com/).
-2. Create a new project (if you don't have one already).
+2. Create a new project.
 3. Navigate to **APIs & Services** from the hamburger menu.
-4. Click on **Credentials**.
-5. Select **Create Credentials > API Key**.
+4. Click on **Enable APIs and Services**.
+5. Add the **YouTube Data API v3** option.
+6. Go back to **APIs & Services**.
+7. Click on **Credentials**.
+8. Select **Create Credentials > API Key**.
+9. Open the newly created API key and under **API Restrictions**, select **Restrict Key**
+10. Add the **YouTube Data API v3** checkmark.
+11. Save your changes.
 
 > [!NOTE] 
 > This API key will be used to connect to the MCP server.

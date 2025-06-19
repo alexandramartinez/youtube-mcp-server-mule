@@ -49,3 +49,4 @@ target/
 velocity.log
 
 .vscode/
+*embedded*
