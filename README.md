@@ -4,6 +4,7 @@ Easily connect your YouTube API to an MCP server using MuleSoft. This guide will
 
 This server is connecting to the [YouTube Data API (v3)](https://developers.google.com/youtube/v3/docs/search/list).
 
+Watch the video for the making and the running: [https://youtu.be/EE1QLCuzGVk](https://youtu.be/EE1QLCuzGVk)
 
 ## Getting Your YouTube API Key
 
