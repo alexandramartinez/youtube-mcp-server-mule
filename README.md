@@ -109,8 +109,8 @@ This server is connecting to the [YouTube Data API (v3)](https://developers.goog
 ## Usage Examples
 Once everything is set up, you can ask your agent questions like:
 
-- **Search for the Prostdev YouTube channel and give me the last 5 videos. Use this api key: <paste your key>**
-- **Create a LinkedIn post that highlights the first 4 videos.**
-- **Make sure to add the links to the videos in the post.**
+- Search for the Prostdev YouTube channel and give me the last 5 videos. Use this api key: `<paste your key>`
+- Create a LinkedIn post that highlights the first 4 videos.
+- Make sure to add the links to the videos in the post.
 
 Enjoy using your YouTube MCP Server Mule integration! 🎬🚀
