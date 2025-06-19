@@ -128,7 +128,7 @@
             "required": ["key"]
         }]]></mcp:parameters-schema>
         <mcp:responses>
-            <mcp:text-tool-response-content text="#[output application/json --- payload]" />
+            <mcp:text-tool-response-content text='#[payload.^raw]' />
         </mcp:responses>
     </mcp:tool-listener>
     <logger level="INFO" doc:name="Log Request" message="Received YouTube search request with parameters: #[payload]" />
