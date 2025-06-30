@@ -14,7 +14,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <mule.maven.plugin.version>4.0.0</mule.maven.plugin.version>
+        <mule.maven.plugin.version>4.3.0</mule.maven.plugin.version>
     </properties>
 
     <build>
@@ -22,7 +22,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-clean-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.0</version>
             </plugin>
             <plugin>
                 <groupId>org.mule.tools.maven</groupId>
@@ -67,9 +67,9 @@
             <classifier>mule-plugin</classifier>
         </dependency>
         <dependency>
-            <groupId>com.mulesoft.connector</groupId>
+            <groupId>com.mulesoft.connectors</groupId>
             <artifactId>mule-mcp-connector</artifactId>
-            <version>0.1.0-BETA</version>
+            <version>1.0.0</version>
             <classifier>mule-plugin</classifier>
         </dependency>
     </dependencies>
